@@ -4,15 +4,14 @@
 package main
 
 import (
+	"github.com/google/wire"
+	"github.com/spf13/viper"
 	"synchydra/internal/handler"
 	"synchydra/internal/repository"
 	"synchydra/internal/server"
 	"synchydra/internal/service"
 	"synchydra/pkg/helper/sid"
-	"synchydra/pkg/jwt"
 	"synchydra/pkg/log"
-	"github.com/google/wire"
-	"github.com/spf13/viper"
 )
 
 var HandlerSet = wire.NewSet(
@@ -40,6 +39,5 @@ func newApp(*viper.Viper, *log.Logger) (*server.Server, func(), error) {
 		server.NewServer,
 		server.NewServerHTTP,
 		sid.NewSid,
-		jwt.NewJwt,
 	))
 }

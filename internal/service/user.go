@@ -2,17 +2,16 @@ package service
 
 import (
 	"context"
+	"github.com/pkg/errors"
+	"golang.org/x/crypto/bcrypt"
 	"synchydra/internal/model"
 	"synchydra/internal/pkg/request"
 	"synchydra/internal/repository"
-	"github.com/pkg/errors"
-	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 type UserService interface {
 	Register(ctx context.Context, req *request.RegisterRequest) error
-	Login(ctx context.Context, req *request.LoginRequest) (string, error)
+	Login(ctx context.Context, req *request.LoginRequest) error
 	GetProfile(ctx context.Context, userId string) (*model.User, error)
 	UpdateProfile(ctx context.Context, userId string, req *request.UpdateProfileRequest) error
 }
@@ -58,22 +57,18 @@ func (s *userService) Register(ctx context.Context, req *request.RegisterRequest
 	return nil
 }
 
-func (s *userService) Login(ctx context.Context, req *request.LoginRequest) (string, error) {
+func (s *userService) Login(ctx context.Context, req *request.LoginRequest) error {
 	user, err := s.userRepo.GetByUsername(ctx, req.Username)
 	if err != nil || user == nil {
-		return "", errors.Wrap(err, "failed to get user by username")
+		return errors.Wrap(err, "failed to get user by username")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
 	if err != nil {
-		return "", errors.Wrap(err, "failed to hash password")
-	}
-	token, err := s.jwt.GenToken(user.UserId, time.Now().Add(time.Hour*24*90))
-	if err != nil {
-		return "", errors.Wrap(err, "failed to generate JWT token")
+		return errors.Wrap(err, "failed to hash password")
 	}
 
-	return token, nil
+	return nil
 }
 
 func (s *userService) GetProfile(ctx context.Context, userId string) (*model.User, error) {

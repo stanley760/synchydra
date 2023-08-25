@@ -6,8 +6,6 @@ import (
 
 type Server struct {
 	ServerHTTP *gin.Engine
-	//ServerGRPC *grpc.Server
-	//ServerWS   *ws.Server
 }
 
 func NewServer(serverHTTP *gin.Engine) *Server {
