@@ -14,28 +14,17 @@ import (
 	"synchydra/pkg/log"
 )
 
-var HandlerSet = wire.NewSet(
-	handler.NewHandler,
-	handler.NewUserHandler,
-)
-
-var ServiceSet = wire.NewSet(
-	service.NewService,
-	service.NewUserService,
-)
-
-var RepositorySet = wire.NewSet(
-	repository.NewDB,
-	repository.NewRedis,
-	repository.NewRepository,
-	repository.NewUserRepository,
+var middlewareSet = wire.NewSet(
+	middleware.NewRedis,
+	middleware.NewCanalClient,
+	middleware.NewRocketmqProvider,
+	middleware.NewRocketmqConsumer,
+)epository.NewUserRepository,
 )
 
 func newApp(*viper.Viper, *log.Logger) (*server.Server, func(), error) {
 	panic(wire.Build(
-		RepositorySet,
-		ServiceSet,
-		HandlerSet,
+		middlewareSet,
 		server.NewServer,
 		server.NewServerHTTP,
 		sid.NewSid,
