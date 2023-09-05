@@ -7,10 +7,11 @@
 package main
 
 import (
-	"synchydra/internal/repository"
-	"synchydra/pkg/log"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
+	"synchydra/internal/pkg/middleware"
+	"synchydra/internal/repository"
+	"synchydra/pkg/log"
 )
 
 // Injectors from wire.go:
@@ -24,4 +25,4 @@ func newApp(viperViper *viper.Viper, logger *log.Logger) (*Migrate, func(), erro
 
 // wire.go:
 
-var RepositorySet = wire.NewSet(repository.NewDB, repository.NewRedis, repository.NewRepository, repository.NewUserRepository)
+var RepositorySet = wire.NewSet(repository.NewDB, middleware.NewRedis, repository.NewRepository, repository.NewUserRepository)

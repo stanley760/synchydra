@@ -7,31 +7,30 @@
 package main
 
 import (
+	"github.com/google/wire"
+	"github.com/spf13/viper"
 	"synchydra/internal/handler"
+	"synchydra/internal/pkg/middleware"
 	"synchydra/internal/repository"
 	"synchydra/internal/server"
 	"synchydra/internal/service"
 	"synchydra/pkg/helper/sid"
-	"synchydra/pkg/jwt"
 	"synchydra/pkg/log"
-	"github.com/google/wire"
-	"github.com/spf13/viper"
 )
 
 // Injectors from wire.go:
 
 func newApp(viperViper *viper.Viper, logger *log.Logger) (*server.Server, func(), error) {
-	jwtJWT := jwt.NewJwt(viperViper)
 	handlerHandler := handler.NewHandler(logger)
 	sidSid := sid.NewSid()
-	serviceService := service.NewService(logger, sidSid, jwtJWT)
+	serviceService := service.NewService(logger, sidSid)
 	db := repository.NewDB(viperViper)
-	client := repository.NewRedis(viperViper)
+	client := middleware.NewRedis(viperViper)
 	repositoryRepository := repository.NewRepository(db, client, logger)
 	userRepository := repository.NewUserRepository(repositoryRepository)
 	userService := service.NewUserService(serviceService, userRepository)
 	userHandler := handler.NewUserHandler(handlerHandler, userService)
-	engine := server.NewServerHTTP(logger, jwtJWT, userHandler)
+	engine := server.NewServerHTTP(logger, userHandler)
 	serverServer := server.NewServer(engine)
 	return serverServer, func() {
 	}, nil
@@ -39,8 +38,10 @@ func newApp(viperViper *viper.Viper, logger *log.Logger) (*server.Server, func()
 
 // wire.go:
 
-var HandlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler)
+var middlewareSet = wire.NewSet(middleware.NewRedis, middleware.NewCanalClient, middleware.NewRocketmqProvider, middleware.NewRocketmqConsumer)
 
-var ServiceSet = wire.NewSet(service.NewService, service.NewUserService)
+var repositorySet = wire.NewSet(repository.NewDB, repository.NewRepository, repository.NewUserRepository)
 
-var RepositorySet = wire.NewSet(repository.NewDB, repository.NewRedis, repository.NewRepository, repository.NewUserRepository)
+var serviceSet = wire.NewSet(service.NewService, service.NewUserService)
+
+var handlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler)

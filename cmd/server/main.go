@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"synchydra/pkg/config"
 	"synchydra/pkg/http"
 	"synchydra/pkg/log"
-	"go.uber.org/zap"
 )
 
 func main() {

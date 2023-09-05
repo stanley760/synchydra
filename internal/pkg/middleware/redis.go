@@ -12,7 +12,7 @@ type Redis struct {
 	rdc *redis.Client
 }
 
-func NewRedis(conf *viper.Viper) (*redis.Client, error) {
+func NewRedis(conf *viper.Viper) *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     conf.GetString("data.redis.addr"),
 		Password: conf.GetString("data.redis.password"),
@@ -27,5 +27,5 @@ func NewRedis(conf *viper.Viper) (*redis.Client, error) {
 		panic(fmt.Sprintf("redis error: %s", err.Error()))
 	}
 
-	return rdb, err
+	return rdb
 }

@@ -4,15 +4,16 @@
 package main
 
 import (
-	"synchydra/internal/repository"
-	"synchydra/pkg/log"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
+	"synchydra/internal/pkg/middleware"
+	"synchydra/internal/repository"
+	"synchydra/pkg/log"
 )
 
 var RepositorySet = wire.NewSet(
 	repository.NewDB,
-	repository.NewRedis,
+	middleware.NewRedis,
 	repository.NewRepository,
 	repository.NewUserRepository,
 )
